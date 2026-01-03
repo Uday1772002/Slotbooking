@@ -1,0 +1,106 @@
+.slot-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.slot-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.slot-card.unavailable {
+  opacity: 0.6;
+}
+
+.slot-date {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.slot-time {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.slot-availability {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.slot-card .btn {
+  width: 100%;
+}
+
+.booked-badge,
+.unavailable-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.booked-badge {
+  background-color: #28a745;
+  color: white;
+}
+
+.unavailable-badge {
+  background-color: #dc3545;
+  color: white;
+}
+
+.provider-status {
+  margin-top: 10px;
+}
+
+.provider-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 14px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.status-badge.available {
+  background-color: #28a745;
+  color: white;
+}
+
+.status-badge.full {
+  background-color: #ffc107;
+  color: #333;
+}
