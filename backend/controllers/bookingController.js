@@ -2,33 +2,38 @@ const Booking = require("../models/Booking");
 const TimeSlot = require("../models/TimeSlot");
 const Notification = require("../models/Notification");
 
+// Create a new booking
 const createBooking = async (req, res) => {
   try {
     const { slotId, notes } = req.body;
 
+    // Validate slot ID
+    if (!slotId) {
+      return res.status(400).json({ message: "Slot ID is required" });
+    }
+
+    // Validate notes length if provided
+    if (notes && notes.length > 500) {
+      return res.status(400).json({ message: "Notes cannot exceed 500 characters" });
+    }
+
+    // Check if slot exists
     const slot = await TimeSlot.findById(slotId);
     if (!slot) {
-      return res.status(404).json({
-        success: false,
-        message: "Slot not found",
-      });
+      return res.status(404).json({ message: "Time slot not found" });
     }
 
+    // Prevent providers from booking their own slots
     if (slot.createdBy === req.user.uid) {
-      return res.status(403).json({
-        success: false,
-        message: "Can't book your own slot",
-      });
+      return res.status(403).json({ message: "Cannot book your own time slot" });
     }
 
+    // Check if slot is available
     if (!slot.isAvailable || slot.currentBookings >= slot.maxBookings) {
-      return res.status(400).json({
-        success: false,
-        message: "Slot not available",
-      });
+      return res.status(400).json({ message: "This slot is no longer available" });
     }
 
-    // Check if user already has a booking for this slot
+    // Check for duplicate booking
     const existingBooking = await Booking.findOne({
       userId: req.user.uid,
       slotId,
@@ -36,12 +41,10 @@ const createBooking = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({
-        success: false,
-        message: "Already booked this slot",
-      });
+      return res.status(400).json({ message: "You have already booked this slot" });
     }
 
+    // Create the booking
     const booking = new Booking({
       userId: req.user.uid,
       slotId,
@@ -51,28 +54,25 @@ const createBooking = async (req, res) => {
 
     await booking.save();
 
-    // update slot count
+    // Update slot booking count
     slot.currentBookings += 1;
     if (slot.currentBookings >= slot.maxBookings) {
       slot.isAvailable = false;
     }
     await slot.save();
 
+    // Send confirmation notification
     await Notification.create({
       userId: req.user.uid,
       title: "Booking Confirmed",
-      message:
-        "Booked for " +
-        new Date(slot.date).toLocaleDateString() +
-        " at " +
-        slot.startTime,
+      message: `Booking confirmed for ${slot.date} at ${slot.startTime}`,
       type: "booking",
       relatedBookingId: booking._id,
     });
 
     res.status(201).json({
       success: true,
-      message: "Booking created",
+      message: "Booking created successfully",
       booking,
     });
   } catch (error) {

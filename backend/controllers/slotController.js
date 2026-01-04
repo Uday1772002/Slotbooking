@@ -1,15 +1,18 @@
 const TimeSlot = require("../models/TimeSlot");
 const Booking = require("../models/Booking");
+const { isValidDate, isValidTime } = require("../middleware/validationMiddleware");
 
+// Helper function to convert time to minutes for comparison
+const timeToMinutes = (time) => {
+  const [timePart, period] = time.split(" ");
+  let [hours, minutes] = timePart.split(":").map(Number);
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+};
+
+// Check if two time slots overlap
 const doTimeSlotsOverlap = (start1, end1, start2, end2) => {
-  const timeToMinutes = (time) => {
-    const [timePart, period] = time.split(" ");
-    let [hours, minutes] = timePart.split(":").map(Number);
-    if (period === "PM" && hours !== 12) hours += 12;
-    if (period === "AM" && hours === 12) hours = 0;
-    return hours * 60 + minutes;
-  };
-
   const start1Min = timeToMinutes(start1);
   const end1Min = timeToMinutes(end1);
   const start2Min = timeToMinutes(start2);
@@ -18,43 +21,60 @@ const doTimeSlotsOverlap = (start1, end1, start2, end2) => {
   return start1Min < end2Min && end1Min > start2Min;
 };
 
+// Create a new time slot
 const createTimeSlot = async (req, res) => {
   try {
     const { date, startTime, endTime, maxBookings } = req.body;
 
-    const timeToMinutes = (time) => {
-      const [timePart, period] = time.split(" ");
-      let [hours, minutes] = timePart.split(":").map(Number);
-      if (period === "PM" && hours !== 12) hours += 12;
-      if (period === "AM" && hours === 12) hours = 0;
-      return hours * 60 + minutes;
-    };
-
-    if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
-      return res.status(400).json({
-        success: false,
-        message: "End time must be after start time",
-      });
+    // Validate required fields
+    if (!date) {
+      return res.status(400).json({ message: "Date is required" });
     }
 
+    if (!startTime) {
+      return res.status(400).json({ message: "Start time is required" });
+    }
+
+    if (!endTime) {
+      return res.status(400).json({ message: "End time is required" });
+    }
+
+    // Validate date format
+    if (!isValidDate(date)) {
+      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD" });
+    }
+
+    // Validate time formats
+    if (!isValidTime(startTime)) {
+      return res.status(400).json({ message: "Invalid start time format. Use HH:MM AM/PM" });
+    }
+
+    if (!isValidTime(endTime)) {
+      return res.status(400).json({ message: "Invalid end time format. Use HH:MM AM/PM" });
+    }
+
+    // Check if end time is after start time
+    if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
+      return res.status(400).json({ message: "End time must be after start time" });
+    }
+
+    // Validate maxBookings if provided
+    if (maxBookings && (maxBookings < 1 || !Number.isInteger(maxBookings))) {
+      return res.status(400).json({ message: "Max bookings must be at least 1" });
+    }
+
+    // Check for overlapping slots on the same date
     const existingSlots = await TimeSlot.find({ date });
 
     for (const existing of existingSlots) {
-      if (
-        doTimeSlotsOverlap(
-          startTime,
-          endTime,
-          existing.startTime,
-          existing.endTime
-        )
-      ) {
+      if (doTimeSlotsOverlap(startTime, endTime, existing.startTime, existing.endTime)) {
         return res.status(400).json({
-          success: false,
-          message: `Time slot conflicts with existing slot: ${existing.startTime} - ${existing.endTime}`,
+          message: `Time slot overlaps with existing slot: ${existing.startTime} - ${existing.endTime}`,
         });
       }
     }
 
+    // Create the slot
     const slot = new TimeSlot({
       date,
       startTime,
@@ -67,14 +87,11 @@ const createTimeSlot = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Slot created",
+      message: "Time slot created successfully",
       slot,
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ message: "Server error" });
   }
 };
 

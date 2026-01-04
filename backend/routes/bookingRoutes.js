@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
 const { verifyToken } = require("../middleware/authMiddleware");
-const { requireRole } = require("../middleware/roleMiddleware");
-const { validate } = require("../middleware/validationMiddleware");
+const { checkProviderRole, checkCustomerRole } = require("../middleware/roleMiddleware");
 const {
   createBooking,
   getUserBookings,
@@ -12,26 +10,20 @@ const {
   getProviderBookings,
 } = require("../controllers/bookingController");
 
+// All booking routes need authentication
 router.use(verifyToken);
 
-router.get("/provider/bookings", requireRole("provider"), getProviderBookings);
+// Provider sees all bookings for their slots
+router.get("/provider/bookings", checkProviderRole, getProviderBookings);
+
+// User sees their own bookings
 router.get("/", getUserBookings);
 router.get("/:id", getBookingById);
 
-router.post(
-  "/",
-  requireRole("customer"),
-  [
-    body("slotId").notEmpty().withMessage("Slot ID is required"),
-    body("notes")
-      .optional()
-      .isLength({ max: 500 })
-      .withMessage("Notes cannot exceed 500 characters"),
-  ],
-  validate,
-  createBooking
-);
+// Customers can create bookings
+router.post("/", checkCustomerRole, createBooking);
 
+// Cancel booking
 router.patch("/:id/cancel", cancelBooking);
 
 module.exports = router;
