@@ -14,7 +14,9 @@ const createBooking = async (req, res) => {
 
     // Validate notes length if provided
     if (notes && notes.length > 500) {
-      return res.status(400).json({ message: "Notes cannot exceed 500 characters" });
+      return res
+        .status(400)
+        .json({ message: "Notes cannot exceed 500 characters" });
     }
 
     // Check if slot exists
@@ -25,12 +27,16 @@ const createBooking = async (req, res) => {
 
     // Prevent providers from booking their own slots
     if (slot.createdBy === req.user.uid) {
-      return res.status(403).json({ message: "Cannot book your own time slot" });
+      return res
+        .status(403)
+        .json({ message: "Cannot book your own time slot" });
     }
 
     // Check if slot is available
     if (!slot.isAvailable || slot.currentBookings >= slot.maxBookings) {
-      return res.status(400).json({ message: "This slot is no longer available" });
+      return res
+        .status(400)
+        .json({ message: "This slot is no longer available" });
     }
 
     // Check for duplicate booking
@@ -41,7 +47,9 @@ const createBooking = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({ message: "You have already booked this slot" });
+      return res
+        .status(400)
+        .json({ message: "You have already booked this slot" });
     }
 
     // Create the booking

@@ -10,7 +10,9 @@ const checkProviderRole = async (req, res, next) => {
     }
 
     if (user.role !== "provider") {
-      return res.status(403).json({ message: "Only providers can access this" });
+      return res
+        .status(403)
+        .json({ message: "Only providers can access this" });
     }
 
     req.userRole = user.role;
@@ -30,7 +32,9 @@ const checkCustomerRole = async (req, res, next) => {
     }
 
     if (user.role !== "customer") {
-      return res.status(403).json({ message: "Only customers can access this" });
+      return res
+        .status(403)
+        .json({ message: "Only customers can access this" });
     }
 
     req.userRole = user.role;

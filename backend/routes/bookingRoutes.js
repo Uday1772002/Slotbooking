@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken } = require("../middleware/authMiddleware");
-const { checkProviderRole, checkCustomerRole } = require("../middleware/roleMiddleware");
+const {
+  checkProviderRole,
+  checkCustomerRole,
+} = require("../middleware/roleMiddleware");
 const {
   createBooking,
   getUserBookings,

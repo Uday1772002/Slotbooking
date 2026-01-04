@@ -1,6 +1,9 @@
 const TimeSlot = require("../models/TimeSlot");
 const Booking = require("../models/Booking");
-const { isValidDate, isValidTime } = require("../middleware/validationMiddleware");
+const {
+  isValidDate,
+  isValidTime,
+} = require("../middleware/validationMiddleware");
 
 // Helper function to convert time to minutes for comparison
 const timeToMinutes = (time) => {
@@ -41,33 +44,50 @@ const createTimeSlot = async (req, res) => {
 
     // Validate date format
     if (!isValidDate(date)) {
-      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD" });
+      return res
+        .status(400)
+        .json({ message: "Invalid date format. Use YYYY-MM-DD" });
     }
 
     // Validate time formats
     if (!isValidTime(startTime)) {
-      return res.status(400).json({ message: "Invalid start time format. Use HH:MM AM/PM" });
+      return res
+        .status(400)
+        .json({ message: "Invalid start time format. Use HH:MM AM/PM" });
     }
 
     if (!isValidTime(endTime)) {
-      return res.status(400).json({ message: "Invalid end time format. Use HH:MM AM/PM" });
+      return res
+        .status(400)
+        .json({ message: "Invalid end time format. Use HH:MM AM/PM" });
     }
 
     // Check if end time is after start time
     if (timeToMinutes(startTime) >= timeToMinutes(endTime)) {
-      return res.status(400).json({ message: "End time must be after start time" });
+      return res
+        .status(400)
+        .json({ message: "End time must be after start time" });
     }
 
     // Validate maxBookings if provided
     if (maxBookings && (maxBookings < 1 || !Number.isInteger(maxBookings))) {
-      return res.status(400).json({ message: "Max bookings must be at least 1" });
+      return res
+        .status(400)
+        .json({ message: "Max bookings must be at least 1" });
     }
 
     // Check for overlapping slots on the same date
     const existingSlots = await TimeSlot.find({ date });
 
     for (const existing of existingSlots) {
-      if (doTimeSlotsOverlap(startTime, endTime, existing.startTime, existing.endTime)) {
+      if (
+        doTimeSlotsOverlap(
+          startTime,
+          endTime,
+          existing.startTime,
+          existing.endTime
+        )
+      ) {
         return res.status(400).json({
           message: `Time slot overlaps with existing slot: ${existing.startTime} - ${existing.endTime}`,
         });

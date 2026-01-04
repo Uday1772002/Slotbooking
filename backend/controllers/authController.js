@@ -65,7 +65,9 @@ const registerUser = async (req, res) => {
     // Clean and validate phone number
     const cleanPhone = phoneNumber.replace(/\s+/g, "");
     if (!isValidPhone(cleanPhone)) {
-      return res.status(400).json({ message: "Invalid phone number format. Use +91XXXXXXXXXX" });
+      return res
+        .status(400)
+        .json({ message: "Invalid phone number format. Use +91XXXXXXXXXX" });
     }
 
     // Check if user already exists
@@ -80,13 +82,17 @@ const registerUser = async (req, res) => {
 
     // Validate role
     if (!role || !["provider", "customer"].includes(role)) {
-      return res.status(400).json({ message: "Role must be either provider or customer" });
+      return res
+        .status(400)
+        .json({ message: "Role must be either provider or customer" });
     }
 
     // Check if phone number already in use
     const existingPhone = await User.findOne({ phoneNumber: cleanPhone });
     if (existingPhone) {
-      return res.status(400).json({ message: "Phone number already registered" });
+      return res
+        .status(400)
+        .json({ message: "Phone number already registered" });
     }
 
     // Create new user
@@ -147,7 +153,9 @@ const updateUserProfile = async (req, res) => {
 
     // Validate name if provided
     if (name && name.trim().length < 2) {
-      return res.status(400).json({ message: "Name must be at least 2 characters" });
+      return res
+        .status(400)
+        .json({ message: "Name must be at least 2 characters" });
     }
 
     const user = await User.findOneAndUpdate(
