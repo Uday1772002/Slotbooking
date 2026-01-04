@@ -9,7 +9,8 @@
 
 .bookings-header h1 {
   margin: 0;
-  color: #333;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .filter-buttons {
@@ -19,10 +20,10 @@
 
 .filter-btn {
   padding: 8px 16px;
-  border: 2px solid #007bff;
+  border: 2px solid #667eea;
   background: white;
-  color: #007bff;
-  border-radius: 5px;
+  color: #667eea;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -30,12 +31,14 @@
 }
 
 .filter-btn:hover {
-  background: #e7f3ff;
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-1px);
 }
 
 .filter-btn.active {
-  background: #007bff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
+  border-color: transparent;
 }
 
 .bookings-list {

@@ -8,17 +8,21 @@
 
 .login-card {
   background: white;
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 40px;
   max-width: 600px;
   width: 100%;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
 }
 
 .login-card h1 {
   text-align: center;
-  color: #333;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 10px;
+  font-weight: 700;
 }
 
 .login-card p {

@@ -9,12 +9,13 @@
 
 .notifications-header h1 {
   margin: 0;
-  color: #333;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .unread-badge {
   display: inline-block;
-  background-color: #dc3545;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
   color: white;
   padding: 4px 12px;
   border-radius: 15px;
