@@ -97,10 +97,25 @@ const Dashboard = () => {
     return today.toISOString().split("T")[0];
   };
 
+  // Convert 24-hour time to 12-hour format with AM/PM
+  const convertTo12Hour = (time24) => {
+    const [hours, minutes] = time24.split(":");
+    let hour = parseInt(hours);
+    const ampm = hour >= 12 ? "PM" : "AM";
+    hour = hour % 12 || 12; // Convert 0 to 12 for midnight
+    return `${hour}:${minutes} ${ampm}`;
+  };
+
   const handleCreateSlot = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/slots", newSlot);
+      // Convert times to 12-hour format before sending
+      const slotData = {
+        ...newSlot,
+        startTime: convertTo12Hour(newSlot.startTime),
+        endTime: convertTo12Hour(newSlot.endTime),
+      };
+      await api.post("/slots", slotData);
       toast.success("Slot created!");
       setShowCreateForm(false);
       setNewSlot({ date: "", startTime: "", endTime: "", maxBookings: 1 });
