@@ -130,7 +130,7 @@ const Login = () => {
         return;
       }
 
-      console.log("🆕 New user detected, showing role selection");
+      console.log(" New user detected, showing role selection");
       sessionStorage.setItem("inRoleSelection", "true");
       setShowRoleSelection(true);
       setLoading(false);
